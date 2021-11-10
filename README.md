@@ -1,5 +1,6 @@
-# SCBsnake
-Statistikmyndigheten SCB GUI-API something tool
+# SCBsnake v0.0.1
+
+Statistikmyndigheten SCB GUI-API something-something tool!
 
 If you're here, you know what this is...
 
