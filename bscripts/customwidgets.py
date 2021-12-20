@@ -90,6 +90,7 @@ class MovableScrollWidget(GODLabel):
 
         def mouseReleaseEvent(self, ev: QtGui.QMouseEvent) -> None:
             if ev.button() == 2 and self.parent.signal:
+                self.parent.close()
                 self.parent.signal.killswitch.emit()
 
         def mousePressEvent(self, ev: QtGui.QMouseEvent) -> None:
@@ -384,6 +385,11 @@ class RootAPI(Canvas):
             self.child.make_title(text=data['title'])
             self.main.grow_new_leaf(data=data, url=self.url, movablewidget=self.child)
 
+        if self.child.geometry().right() > self.main.width():
+            t.pos(self.child, right=self.main.width() - self.child.lineWidth())
+            if self.child.geometry().left() < 0:
+                t.pos(self.child, left=0)
+
     def killswitch(self):
         self.activation_toggle(force=False)
         self.change_colors()
@@ -405,6 +411,7 @@ class RootAPI(Canvas):
 
         elif not self.activated:
             self.signal.killswitch.emit()
+
 
 class LeafAPI(RootAPI):
     class Leaf(RootAPI):
@@ -465,6 +472,7 @@ class LeafAPI(RootAPI):
                         label.setAlignment(QtCore.Qt.AlignRight)
                         label.setIndent(3)
                         label.setText(value)
+                        label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
                         t.pos(label, width=self.child.columns[count], left=self.child.columns[count])
                         t.style(label, background=GRAY, color=BLACK)
 
@@ -572,44 +580,6 @@ class LeafAPI(RootAPI):
                     t.pos(self.child, width=squareplate.geometry().right() + 1)
 
                 t.signal_highlight()
-
-
-
-
-
-
-
-
-            # if len(self.worklist) > batchsize:
-            #     square = self.BatchSquare(place=self.child.toolplate, startfrom=0, mouse=True, parent=self)
-            #     square.activation_toggle(force=True)
-            #     square.change_colors() # first one is activate as it is created
-            #
-            #     x = self.child.title.height() / 3
-            #     t.pos(square, size=[x,x], after=self.child.title, x_margin=1, bottom=self.child.title, y_margin=1)
-            #     self.squares.append(square)
-            #
-            #     while self.squares[-1].startfrom + batchsize < len(self.worklist):
-            #         batch = self.squares[-1].startfrom + batchsize
-            #         square = self.BatchSquare(place=self.child.toolplate, startfrom=batch, mouse=True, parent=self)
-            #         t.pos(square, coat=self.squares[-1], after=self.squares[-1], x_margin=1)
-            #         if square.geometry().right() > self.child.backplate.width():
-            #
-            #             if len(self.squares) < 11:
-            #                 t.pos(self.child, width=self.child, add=square.width() + 1)
-            #             else:
-            #                 if self.squares[0].geometry().top() - square.height() < 0:
-            #                     square.close()
-            #                     print("FIX ME! scroll page or some other idea...")
-            #                     break
-            #                 else:
-            #                     for i in self.squares:
-            #                         t.pos(i, move=[0, - i.height()])
-            #
-            #                     t.pos(square, left=self.squares[0])
-            #
-            #         self.squares.append(square)
-            # t.signal_highlight()
 
         def generate_query(self):
             query = dict(
